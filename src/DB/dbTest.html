@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id="add">添加数据</button>
+    <p/>
+    <button id="read">读取数据</button>
+
+    <script type="module">
+        let db;
+        // 1. 创建数据库
+        let probeLog = window.indexedDB.open('probe_log');
+
+        // 2. 新建表
+        probeLog.onupgradeneeded  =  (event) => {
+            console.log('onupgradeneeded', event);
+            db = event.target.result;
+            let objectStore;
+            if (!db.objectStoreNames.contains('probe_log_1')) {
+                objectStore = db.createObjectStore('probe_log_1', { autoIncrement: true });
+            }
+        }
+
+        probeLog.onerror = (event) => {
+            console.log('数据库打开失败')
+        }
+
+        probeLog.onsuccess = (event) => {
+            db = event.target.result
+            console.log('event', event);
+            console.log('db', db);
+        }
+
+        // 3. 添加数据
+        function add(tableName, data) {
+            let request = db.transaction([tableName], 'readwrite').objectStore(tableName).add(data);
+            request.onsuccess = (event) => {
+                console.log('写入数据成功', event)
+            };
+            request.onerror =  (event) => {
+                console.log('写入数据失败',event)
+            }
+        }
+
+        document.querySelector('#add').addEventListener('click' , () => {
+            add('probe_log_1', {a: 1})
+        })
+
+        // 读取数据
+        function read(tableName) {
+            let transaction = db.transaction([tableName]);
+            let objectStore = transaction.objectStore(tableName)
+            console.log('objectStore', objectStore);
+            let request = objectStore.get(5)
+            request.onerror = function (event) {
+                console.log('读取事务失败',event)
+            }
+            request.onsuccess = function (event) {
+                if (request.result) {
+                  console.log('读取数据', request.result);
+                } else {
+                    console.log('未获取数据记录')
+                }
+                console.log('读取成功事件', event)
+            }
+        }
+
+        document.querySelector('#read').addEventListener('click' , () => {
+            read('probe_log_1')
+        })
+
+
+
+    </script>
+
+</body>
+</html>
