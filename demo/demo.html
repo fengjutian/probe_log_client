@@ -38,24 +38,36 @@
     <div class="show">
       <div id="btn-error" class="btn">制造错误</div>
       <div id="btn-report" class="btn">发送日志</div>
+
+      <div id="upload-data" class="btn">上传日志</div>
     </div>
   </body>
   <script type="module">
     import ProbeLog from '../dist/probe-log.es.js';
-    const csi = new ProbeLog({
+    const probe = new ProbeLog({
       feID: 'csijs',
       report: (lines) => {
         console.log('### 自定义上报', lines);
       }
     });
-    console.log('### csi ', csi);
+    console.log('### csi ', probe);
     const btnError = document.getElementById('btn-error');
     const btnReport = document.getElementById('btn-report');
     btnError.addEventListener('click', () => {
       test(123);
     });
     btnReport.addEventListener('click', () => {
-      csi.report();
+      probe.report();
     });
+
+
+
+    // 上传日志
+    const uploadData = document.querySelector('#upload-data')
+    uploadData.addEventListener('click', () => {
+      probe.uploadData({url: '/log/upload', data: {"a": 1}}).then(res => {
+        console.log('res------', res)
+      })
+    })
   </script>
 </html>

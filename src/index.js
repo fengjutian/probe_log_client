@@ -6,6 +6,7 @@ import FetchErr from './probe/fetcherr';
 import Forms from './form/forms';
 import { readLines } from './util/store';
 import { arrIsNull } from './util/util';
+import { getFetch } from './upload/fetch'
 
 const letIE9 = () => {
   getUserAgent();
@@ -68,6 +69,11 @@ class ProbeLog {
     const lines = readLines();
     if (arrIsNull(lines)) return;
     this.opts.report(lines);
+  }
+
+  // 上传数据
+  uploadData({url, data}) {
+    return getFetch({url, data})
   }
 }
 
